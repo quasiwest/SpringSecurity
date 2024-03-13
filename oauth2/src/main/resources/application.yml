@@ -1,36 +1,65 @@
 spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3307/toogui?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: ssafy
+    driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      connection-timeout: 3000
+      validation-timeout: 3000
+      minimum-idle: 2
+      max-lifetime: 240000
+      maximum-pool-size: 2
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        #dialect: org.hibernate.dialect.MySQL57Dialect
+        #show_sql: false
+        #format_sql: true
+        #use_sql_comments: true
+        default_batch_fetch_size: 100
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    #org.hibernate.type: TRACE
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.orm.jdbc.extract: TRACE
+
+jwt:
+  secret: dyAeHubOOc8KaOfYB6XEQoEj1QzRlVgtjNL8PYs1A1tymZvvqkcEU7L1imkKHeDawoeidnvdslkasdfasdfasd1asdf123DEnE
+
+---
+
+spring:
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: # 발급 받은 Client ID
-            client-secret: # 발급 받은 Client Secret
+            client-id: 328660736927-o0cgenfk7o99i4h4has817garevuah4l.apps.googleusercontent.com
+            client-secret: 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
             scope: # 기본 값 openid,profile,email => profile, email 로 설정 변경
               - profile
               - email
 
           naver:
-            client-id: # 발급 받은 Client ID
-            client-secret: # 발급 받은 Client Secret
+            client-id: OJvWfEaTgee9uyldR_CS
+            client-secret: TGIXOoSi5_
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
-            #            scope:
-            #              - name
-            #              - email
-            #              - profile_image
+
             client-name: Naver
 
           kakao:
-            client-id: # 발급 받은 Client ID
-            client-secret: # 발급 받은 Client Secret
+            client-id: 29b9406189f97d5f1d8f6753a6503240
+            client-secret: AnbO4jUjQqA5QrJhRYjxqoZ4DcPBMmgg
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             scope: # https://developers.kakao.com/docs/latest/ko/kakaologin/common#user-info
-              - profile_nickname
-              - profile_image
-              - account_email
             redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
             client-name: Kakao
 
@@ -48,3 +77,7 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-info-authentication-method: header
             user-name-attribute: id # Kakao 응답 값 id, connected_at, properties, kakao_account 중 id 지정
+redis:
+  host: localhost
+  port: 6379
+  password: ssafy
