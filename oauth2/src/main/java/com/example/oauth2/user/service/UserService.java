@@ -29,5 +29,11 @@ public class UserService {
     }
 
 
+    @Transactional
+    public void deleteMember(Optional<User> user) {
+        if(user.isEmpty())
+            //에러 처리
 
+        userRepository.delete(user.get());
+    }
 }

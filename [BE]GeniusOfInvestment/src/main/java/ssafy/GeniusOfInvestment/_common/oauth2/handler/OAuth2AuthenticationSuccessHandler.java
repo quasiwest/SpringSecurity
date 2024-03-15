@@ -1,19 +1,9 @@
-package com.example.oauth2.oauth2.handler;
+package ssafy.GeniusOfInvestment._common.oauth2.handler;
 
-import static com.example.oauth2.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.MODE_PARAM_COOKIE_NAME;
-import static com.example.oauth2.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
-import com.example.oauth2.auth.service.AuthTokenService;
-import com.example.oauth2.entity.User;
-import com.example.oauth2.jwt.GeneratedToken;
-import com.example.oauth2.jwt.JwtUtil;
-import com.example.oauth2.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
-import com.example.oauth2.oauth2.service.OAuth2UserPrincipal;
-import com.example.oauth2.oauth2.user.OAuth2Provider;
-import com.example.oauth2.oauth2.user.OAuth2UserUnlinkManager;
-import com.example.oauth2.oauth2.util.CookieUtils;
-import com.example.oauth2.user.dto.request.SingUpRequestDto;
-import com.example.oauth2.user.service.UserService;
+import static ssafy.GeniusOfInvestment._common.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.MODE_PARAM_COOKIE_NAME;
+import static ssafy.GeniusOfInvestment._common.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +15,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
+import ssafy.GeniusOfInvestment._common.jwt.GeneratedToken;
+import ssafy.GeniusOfInvestment._common.jwt.JwtUtil;
+import ssafy.GeniusOfInvestment._common.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import ssafy.GeniusOfInvestment._common.oauth2.service.OAuth2UserPrincipal;
+import ssafy.GeniusOfInvestment._common.oauth2.user.OAuth2Provider;
+import ssafy.GeniusOfInvestment._common.oauth2.user.OAuth2UserUnlinkManager;
+import ssafy.GeniusOfInvestment._common.util.CookieUtils;
+import ssafy.GeniusOfInvestment.auth.service.AuthTokenService;
+import ssafy.GeniusOfInvestment.entity.User;
+import ssafy.GeniusOfInvestment.user.dto.request.SignUpRequestDto;
+import ssafy.GeniusOfInvestment.user.service.UserService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -79,14 +80,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             // TODO: 액세스 토큰, 리프레시 토큰 발급
             // TODO: 리프레시 토큰 DB 저장
 
-            log.info("id={}, email={}, name={}, profileUrl={}, accessToken={}, providerType={}",
-                    principal.getUserInfo().getId(),
-                    principal.getUserInfo().getEmail(),
-                    principal.getUserInfo().getName(),
-                    principal.getUserInfo().getProfileImageUrl(),
-                    principal.getUserInfo().getAccessToken(),
-                    principal.getUserInfo().getProvider()
-            );
+//            log.info("id={}, email={}, name={}, profileUrl={}, accessToken={}, providerType={}",
+//                    principal.getUserInfo().getId(),
+//                    principal.getUserInfo().getEmail(),
+//                    principal.getUserInfo().getName(),
+//                    principal.getUserInfo().getProfileImageUrl(),
+//                    principal.getUserInfo().getAccessToken(),
+//                    principal.getUserInfo().getProvider()
+//            );
 
 
             String socialId = principal.getUserInfo().getId();
@@ -94,7 +95,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             //로그인을 처음한 인원 -> DB에 저장해줘야 함
             if(findMember.isEmpty()){
-                SingUpRequestDto singUpRequestDto = SingUpRequestDto.of(principal.getUserInfo().getId(),principal.getUserInfo().getName(),0L,0,"defalut");
+
+                SignUpRequestDto singUpRequestDto = SignUpRequestDto.of(principal.getUserInfo().getId(),principal.getUserInfo().getName(),0L,0,"default");
                 Long memberId = userService.saveSocialMember(singUpRequestDto);
                 GeneratedToken token = jwtUtil.generateToken(memberId.toString());
 
