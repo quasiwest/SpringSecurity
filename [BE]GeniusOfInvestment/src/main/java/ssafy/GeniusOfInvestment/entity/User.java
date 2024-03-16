@@ -3,6 +3,7 @@ package ssafy.GeniusOfInvestment.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +15,7 @@ import ssafy.GeniusOfInvestment.user.dto.request.SignUpRequestDto;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -122,5 +124,13 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return false;
+    }
+
+    public void updateImageId(Integer imageId) {
+        this.imageId = imageId;
+    }
+
+    public void updateNickName(String nickName) {
+        this.nickName = nickName;
     }
 }
