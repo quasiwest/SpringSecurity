@@ -9,10 +9,6 @@ public class KakaoOAuth2UserInfo implements OAuth2UserInfo {
     private final String id;
     private final String email;
     private final String name;
-    private final String firstName;
-    private final String lastName;
-    private final String nickName;
-    private final String profileImageUrl;
 
     public KakaoOAuth2UserInfo(String accessToken, Map<String, Object> attributes) {
         this.accessToken = accessToken;
@@ -25,11 +21,6 @@ public class KakaoOAuth2UserInfo implements OAuth2UserInfo {
         this.email = (String) kakaoAccount.get("email");
 
         this.name = null;
-        this.firstName = null;
-        this.lastName = null;
-        this.nickName = (String) attributes.get("nickname");
-        ;
-        this.profileImageUrl = (String) attributes.get("profile_image_url");
 
         this.attributes.put("id", id);
         this.attributes.put("email", this.email);

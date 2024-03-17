@@ -1,8 +1,5 @@
 package ssafy.GeniusOfInvestment.user.controller;
 
-
-import com.nimbusds.openid.connect.sdk.UserInfoResponse;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +29,13 @@ public class UserController {
 
     @PutMapping("/{id}/image-id")
     public SuccessResponse<Void> updateUserImageId(@PathVariable(value = "id")Long userId, @RequestBody UpdateImageIdRequestDto updateImageIdRequestDto){
+        log.info(updateImageIdRequestDto.getImageId()+"controller");
         userService.updateUserImageId(userId,updateImageIdRequestDto);
         return SuccessResponse.from(SuccessType.UPDATE_USER_IMAGE_SUCCESSFULLY);
     }
 
     @PutMapping("/{id}/nick-name")
-    public SuccessResponse<Void> updateUserImageId(@PathVariable(value = "id")Long userId, @RequestBody UpdateNickNameRequestDto updateNickNameRequestDto){
+    public SuccessResponse<Void> updateUserNickName(@PathVariable(value = "id")Long userId, @RequestBody UpdateNickNameRequestDto updateNickNameRequestDto){
         userService.updateUserNickName(userId,updateNickNameRequestDto);
         return SuccessResponse.from(SuccessType.UPDATE_USER_NICKNAME_SUCCESSFULLY);
     }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ssafy.GeniusOfInvestment._common.exception.JwtException;
+import ssafy.GeniusOfInvestment.entity.User;
 import ssafy.GeniusOfInvestment.user.service.UserService;
 
 @Slf4j
@@ -45,16 +46,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
 
         // AccessToken을 검증하고, 만료되었을경우 예외를 발생시킨다.
-        // 토큰이 있을 때 해당 토큰의 유효성을 검사함
         if (!jwtUtil.validateToken(token)) {
             throw new JwtException("Access Token 만료!");
         }
 
         if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
-            //SecurityContext에 저장할 Member 객체 생성
-            UserDetails userDetails = userService.loadUserByUsername(jwtUtil.getUserId(token));
+            //SecurityContext에 저장할 User 객체 생성
+            User user = userService.getAuthenticationUser(jwtUtil.getUserId(token));
 
-            Authentication authentication = jwtUtil.getAuthentication(userDetails);
+            Authentication authentication = jwtUtil.getAuthentication(user);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         }

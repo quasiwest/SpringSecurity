@@ -14,6 +14,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import ssafy.GeniusOfInvestment._common.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import ssafy.GeniusOfInvestment._common.util.CookieUtils;
 
+/**
+ * OAuth2 인증 실패시 호출되는 핸들러
+ * 인증 실패 -> 프론트엔드에서 백엔드로 로그인 요청시 redirect_uri 쿼리 파리미터에 담긴 주소로 리다이렉트함
+ * 이때 error라는 쿼리 파라미터에 오류 메세지를 담아서 리다이렉트
+ */
 @RequiredArgsConstructor
 @Component
 public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {

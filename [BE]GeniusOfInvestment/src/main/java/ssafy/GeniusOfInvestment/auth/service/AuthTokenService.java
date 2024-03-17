@@ -36,7 +36,7 @@ public class AuthTokenService {
             //새로운 액세스 토큰을 반환해준다.
             return newAccessToken;
         }
-
+        // RefreshToken이 유효하지 않다면 예외 처리, 전달
         return null;
     }
 

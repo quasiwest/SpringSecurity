@@ -27,6 +27,11 @@ import ssafy.GeniusOfInvestment.entity.User;
 import ssafy.GeniusOfInvestment.user.dto.request.SignUpRequestDto;
 import ssafy.GeniusOfInvestment.user.service.UserService;
 
+/**
+ * OAuth2 인증 성공시 호출되는 핸들러
+ * 프론트앤트에서 백엔드 로그인 요청시 mode 쿼리 파라미터에 담긴 값에 따라 분기하여 처리
+ * mode=login -> 사용자 정보 DB 저장, 서비스 액세스 토큰, 리프레시 토큰 생성, 리프레시 토큰 DB 저장
+ */
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -67,6 +72,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .map(Cookie::getValue)
                 .orElse("");
 
+        //CustomOAuth2UserService에서 저장한 OAuth2UserPrincipal(oAuth2UserInfo)
         OAuth2UserPrincipal principal = getOAuth2UserPrincipal(authentication);
 
         if (principal == null) {
@@ -91,44 +97,43 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 
             String socialId = principal.getUserInfo().getId();
-            Optional<User> findMember = userService.findBySocialId(socialId);
+            Optional<User> findUser = userService.findBySocialId(socialId);
 
             //로그인을 처음한 인원 -> DB에 저장해줘야 함
-            if(findMember.isEmpty()){
+            if(findUser.isEmpty()){
 
-                SignUpRequestDto singUpRequestDto = SignUpRequestDto.of(principal.getUserInfo().getId(),principal.getUserInfo().getName(),0L,0,"default");
-                Long memberId = userService.saveSocialMember(singUpRequestDto);
+                User user = User.of(principal.getUserInfo().getId(),0L,0,null);
+                Long memberId = userService.saveSocialMember(user);
                 GeneratedToken token = jwtUtil.generateToken(memberId.toString());
 
                 //TODO: 회원가입 페이지(닉네임)로 리다이렉트
                 return UriComponentsBuilder.fromUriString(targetUrl)
                         .queryParam("access-token", token.getAccessToken())
                         .queryParam("member-id", memberId)
-                        .queryParam("next", "get-user-nickname")
+                        .queryParam("next", "kakaoLogin")
                         .build().toUriString();
             }else {
                 //회원이 존재하는 경우
-                GeneratedToken token = jwtUtil.generateToken(findMember.get().getId().toString());
+                GeneratedToken token = jwtUtil.generateToken(findUser.get().getId().toString());
 
                 //TODO: 로그인 후 페이지로 리다이렉트
                 return UriComponentsBuilder.fromUriString(targetUrl)
                         .queryParam("access-token", token.getAccessToken())
-                        .queryParam("member-id", findMember.get().getId())
+                        .queryParam("member-id", findUser.get().getId())
                         .queryParam("next", "main")
                         .build().toUriString();
             }
 
         } else if ("unlink".equalsIgnoreCase(mode)) {
-
+            // TODO: DB 삭제
+            // TODO: 리프레시 토큰 삭제
             String accessToken = principal.getUserInfo().getAccessToken();
             OAuth2Provider provider = principal.getUserInfo().getProvider();
             oAuth2UserUnlinkManager.unlink(provider, accessToken);
             Optional<User> findMember = userService.findBySocialId(principal.getUserInfo().getId());
             authTokenService.removeRefreshTokenById(findMember.get().getId().toString());
             userService.deleteMember(findMember);
-            // TODO: DB 삭제
-            // TODO: 리프레시 토큰 삭제
-            oAuth2UserUnlinkManager.unlink(provider, accessToken);
+
 
             return UriComponentsBuilder.fromUriString(targetUrl)
                     .build().toUriString();

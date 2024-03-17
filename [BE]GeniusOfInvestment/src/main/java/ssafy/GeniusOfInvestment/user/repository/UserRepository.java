@@ -15,4 +15,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Query("SELECT COUNT(*) + 1 AS rank FROM User u WHERE u.exp > (SELECT u2.exp FROM User u2 WHERE u2.id = :userId)")
     Long findRankByExp(@Param("userId") Long userId);
 
+    boolean existsByNickName(String nickname);
 }

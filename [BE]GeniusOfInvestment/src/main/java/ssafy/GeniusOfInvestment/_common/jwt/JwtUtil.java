@@ -21,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import ssafy.GeniusOfInvestment.entity.User;
 
 @Slf4j
 @Service
@@ -40,48 +41,6 @@ public class JwtUtil {
     public void init() {
         byte[] key = Decoders.BASE64URL.decode(secret);
         this.key = Keys.hmacShaKeyFor(key);
-    }
-
-    public GeneratedToken generateToken(String memberId) {
-        // refreshToken과 accessToken을 생성한다.
-        String refreshToken = generateRefreshToken(memberId);
-        String accessToken = generateAccessToken(memberId);
-
-        // 토큰을 Redis에 저장한다.
-        jwtTokenService.saveTokenInfo(memberId, refreshToken, accessToken);
-        return new GeneratedToken(accessToken, refreshToken);
-    }
-
-    public String generateRefreshToken(String memberId) {
-
-        //새로운 클레임 객체 생성, 이메일 세팅
-        Claims claims = Jwts.claims().setSubject(memberId);
-
-        //현재 시간과 날짜
-        Date now = new Date();
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME_IN_MILLISECONDS))
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    public String generateAccessToken(String memberId) {
-
-        //새로운 클레임 객체 생성, 이메일 세팅
-        Claims claims = Jwts.claims().setSubject(memberId);
-
-        //현재 시간과 날짜
-        Date now = new Date();
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME_IN_MILLISECONDS))
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
     }
 
     public boolean validateToken(String token) {
@@ -111,14 +70,56 @@ public class JwtUtil {
         return false;
     }
 
-    public Authentication getAuthentication(UserDetails userDetails) {
+    public GeneratedToken generateToken(String memberId) {
+        // refreshToken과 accessToken을 생성한다.
+        String refreshToken = generateRefreshToken(memberId);
+        String accessToken = generateAccessToken(memberId);
 
-        return new UsernamePasswordAuthenticationToken(userDetails, "",
+        // 토큰을 Redis에 저장한다.
+        jwtTokenService.saveTokenInfo(memberId, refreshToken, accessToken);
+        return new GeneratedToken(accessToken, refreshToken);
+    }
+
+    public String generateRefreshToken(String userId) {
+
+        //새로운 클레임 객체 생성, userId를 Subject설정
+        Claims claims = Jwts.claims().setSubject(userId);
+
+        //현재 시간과 날짜
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME_IN_MILLISECONDS))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateAccessToken(String userId) {
+
+        //새로운 클레임 객체 생성, userId를 Subject설정
+        Claims claims = Jwts.claims().setSubject(userId);
+
+        //현재 시간과 날짜
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME_IN_MILLISECONDS))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public Authentication getAuthentication(User user) {
+
+        return new UsernamePasswordAuthenticationToken(user, "",
                 Collections.emptyList());
     }
 
-    //토큰에서 memberId를 추출한다.
     public String getUserId(String token) {
+        //Subject로 설정한 userId 가져오기
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
     }
 }

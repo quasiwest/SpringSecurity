@@ -5,16 +5,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ssafy.GeniusOfInvestment._common.exception.CustomBadRequestException;
 import ssafy.GeniusOfInvestment._common.response.ErrorType;
 import ssafy.GeniusOfInvestment.entity.User;
 import ssafy.GeniusOfInvestment.user.dto.SecurityUserDto;
 import ssafy.GeniusOfInvestment.user.dto.request.RankInfoResponseDto;
-import ssafy.GeniusOfInvestment.user.dto.request.SignUpRequestDto;
 import ssafy.GeniusOfInvestment.user.dto.request.UpdateImageIdRequestDto;
 import ssafy.GeniusOfInvestment.user.dto.request.UpdateNickNameRequestDto;
 import ssafy.GeniusOfInvestment.user.dto.response.UserInfoResponseDto;
@@ -23,36 +24,21 @@ import ssafy.GeniusOfInvestment.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService{
+@Slf4j
+public class UserService {
 
     private final UserRepository userRepository;
-
-    public SecurityUserDto getSecurityMember(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(IllegalStateException::new);
-        return SecurityUserDto.from(user);
-    }
 
     public Optional<User> findBySocialId(String socialId) {
         return userRepository.findBySocialId(socialId);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findById(Long.parseLong(username));
-
-        if(user.isEmpty()){
-            throw new CustomBadRequestException(ErrorType.NOT_FOUND_USER);
-        }
-
-        return user.get();
-    }
-
-    public Long saveSocialMember(SignUpRequestDto signUpRequestDto) {
-        User user = User.from(signUpRequestDto);
+    @Transactional
+    public Long saveSocialMember(User user) {
         return userRepository.save(user).getId();
     }
 
+    @Transactional
     public void deleteMember(Optional<User> user) {
         if(user.isEmpty())
             throw new CustomBadRequestException(ErrorType.NOT_FOUND_USER);
@@ -63,15 +49,19 @@ public class UserService implements UserDetailsService{
         return UserInfoResponseDto.from(findUser(userId));
     }
 
+    @Transactional
     public void updateUserImageId(Long userId, UpdateImageIdRequestDto updateImageIdRequestDto) {
         User user = findUser(userId);
+        log.info(updateImageIdRequestDto.getImageId()+" ///");
         user.updateImageId(updateImageIdRequestDto.getImageId());
     }
 
+    @Transactional
     public void updateUserNickName(Long userId, UpdateNickNameRequestDto updateNickNameRequestDto) {
         User user = findUser(userId);
+        String nickname = updateNickNameRequestDto.getNickName();
+        validateDuplicatedNickname(nickname);
         user.updateNickName(updateNickNameRequestDto.getNickName());
-
     }
 
     public List<RankInfoResponseDto> getRankInfo() {
@@ -83,6 +73,11 @@ public class UserService implements UserDetailsService{
         return UserRankResponseDto.of(userRepository.findRankByExp(userId),user.getNickName(),user.getExp());
     }
 
+    public User getAuthenticationUser(String userId) {
+        return findUser(Long.parseLong(userId));
+    }
+
+
     private User findUser(Long userId){
         return findById(userId)
                 .orElseThrow(() -> new CustomBadRequestException(ErrorType.NOT_FOUND_USER));
@@ -92,5 +87,9 @@ public class UserService implements UserDetailsService{
         return userRepository.findById(userId);
     }
 
-
+    private void validateDuplicatedNickname(String nickname) {
+        if (userRepository.existsByNickName(nickname)) {
+            throw new CustomBadRequestException(ErrorType.ALREADY_EXIST_MEMBER_NICKNAME);
+        }
+    }
 }
