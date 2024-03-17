@@ -1,0 +1,67 @@
+.carouselContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: hsla(0, 0%, 0%, 0.8);
+  width: 100%;
+  height: 100%;
+  padding: 0 2rem 2rem 2rem;
+  border-radius: 20px;
+  
+}
+
+.cardHeader {
+  color: white;
+  font-size: 200%;
+  text-align: center;
+  align-items: center;
+}
+
+.unactivate {
+  /* 중앙 슬라이드 기준 양쪽 슬라이드에 적용될 스타일 */
+  opacity: 0.3;
+  transform: scale(0.8);
+  z-index: 0;
+}
+
+.active {
+  /* 중앙 슬라이드에 적용될 스타일 */
+  opacity: 1;
+  transform: scale(1.5);
+  z-index: 1;
+  cursor: pointer;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;;
+  align-items: center;
+  width: 50%;
+  /* gap: 20px; */
+  margin-top: 10%;
+  min-width: 100px;
+  /* max-width: 100px;  */
+}
+
+.buttonStyle {
+  width: 100px;
+  height: 100px;
+  background-size: cover;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.cardImage {
+  width: 50%;
+  height: 50%;
+  margin: 0 auto;
+}
