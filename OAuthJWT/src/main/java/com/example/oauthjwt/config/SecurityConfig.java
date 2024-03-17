@@ -47,25 +47,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 
         http
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-
-                        CorsConfiguration configuration = new CorsConfiguration();
-
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                        configuration.setAllowedMethods(Collections.singletonList("*"));
-                        configuration.setAllowCredentials(true);
-                        configuration.setAllowedHeaders(Collections.singletonList("*"));
-                        configuration.setMaxAge(3600L);
-
-                        configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                        configuration.setExposedHeaders(Collections.singletonList("access"));
-
-                        return configuration;
-                    }
-                }));
+                .cors(AbstractHttpConfigurer::disable);
 
         //csrf disable, jwt 방식을 사용하기 때문에 꺼도됨
         http
@@ -95,7 +77,7 @@ public class SecurityConfig {
         //경로별 인가 작업, 루트 경로는 허용, 나머지 경로는 인증 필요
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
+//                        .requestMatchers("/").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated());
 

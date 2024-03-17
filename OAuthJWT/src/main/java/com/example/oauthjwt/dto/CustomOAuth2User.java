@@ -34,10 +34,6 @@ public class CustomOAuth2User implements OAuth2User {
         return collection;
     }
 
-    @Override
-    public String getName() {
-        return securityUserDto.getName();
-    }
 
     public String getSocialId(){
         return securityUserDto.getSocialId();
@@ -47,4 +43,12 @@ public class CustomOAuth2User implements OAuth2User {
         return securityUserDto.isExist();
     }
 
+    public Long getUserId(){
+        return securityUserDto.getUserId();
+    }
+
+    @Override
+    public String getName() {
+        return securityUserDto.getSocialId();
+    }
 }

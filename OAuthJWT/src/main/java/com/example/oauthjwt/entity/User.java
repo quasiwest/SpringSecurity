@@ -28,7 +28,7 @@ public class User {
     @ColumnDefault("0")
     private int imageId;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String nickName;
 
     @ManyToOne(fetch = FetchType.LAZY)

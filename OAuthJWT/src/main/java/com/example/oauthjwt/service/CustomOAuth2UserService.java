@@ -48,12 +48,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         if(existData == null){
 
-            User user = User.of(socialId,0L,0,oAuth2Response.getNickName());
-            userRepository.save(user);
+            User user = User.of(socialId,0L,0,null);
 
             SecurityUserDto securityUserDto = new SecurityUserDto();
+            securityUserDto.setUserId(userRepository.save(user).getId());
             securityUserDto.setSocialId(socialId);
-            securityUserDto.setName(oAuth2Response.getName());
             securityUserDto.setRole("ROLE_USER");
             securityUserDto.setExist(false);
 
@@ -63,8 +62,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         else{
 
             SecurityUserDto securityUserDto = new SecurityUserDto();
+            securityUserDto.setUserId(existData.getId());
             securityUserDto.setSocialId(socialId);
-            securityUserDto.setName(oAuth2Response.getName());
             securityUserDto.setRole("ROLE_USER");
             securityUserDto.setExist(true);
 

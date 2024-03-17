@@ -6,8 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SecurityUserDto {
+    private Long userId;
     private String role;
-    private String name;
     private String socialId;
     private boolean isExist;
 }

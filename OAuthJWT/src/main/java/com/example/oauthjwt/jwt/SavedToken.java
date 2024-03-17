@@ -14,8 +14,15 @@ import java.io.Serializable;
 public class SavedToken implements Serializable {
 
     @Id
-    private String id; //socialId
+    private String id; //userId
+
+    @Indexed
+    private String accessToken;
 
     private String refreshToken;
+
+    public void updateAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
 
 }
